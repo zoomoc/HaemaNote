@@ -9,15 +9,18 @@ namespace HaemaNote
     [Serializable]
     class Note
     {
-        public string NoteText;
+        public readonly uint id;
+        public bool isStickyNote = false;
+        public string NoteText = "";
         public Point StickyNotePos;
-        public Note()
+        
+        public Note(uint id)
         {
-            NoteText = "";
+            this.id = id;
         }
-        public Note(string noteText) : this()
+        public Note(uint id, string noteText)
         {
-            NoteText = noteText;
+            this.NoteText = noteText;
         }
     }
 }

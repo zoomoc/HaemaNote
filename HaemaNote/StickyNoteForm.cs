@@ -20,6 +20,8 @@ namespace HaemaNote
         private TextBox textBox;
         private Button closeBtn;
         private Button addBtn;
+        private ContextMenu contextMenu;
+        private MenuItem showMainFormItem;
 
         //노트추가, 저장, 삭제 이벤트 핸들러
         public delegate void AddNoteEventHandler();
@@ -31,20 +33,31 @@ namespace HaemaNote
         public delegate void DeleteEventHandler(StickyNoteForm sender);
         public event DeleteEventHandler sendDeleteEvent;
 
+        public delegate void ShowMainFormEventHandler();
+        public event ShowMainFormEventHandler showMainForm;
+
         //노트 데이터
         public Note note;
 
-        //초기화하는 도중 텍스트박스 값을 변경하면 이벤트가 발생하는 문제 해결을 위해
+        //초기화하는 도중 텍스트박스 값을 변경하면 이벤트 처리 함수가 동작하는 문제 해결을 위해
         //isInit 값이 false일때는 save, delete 등이 동작하지 않도록 함
         private bool isInit = false;
 
-        public StickyNoteForm()
+        private StickyNoteForm()
         {
             //창 일반 설정
             ClientSize = new System.Drawing.Size(224, 181);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             BackColor = Color.FromArgb(253, 253, 201);
             ShowInTaskbar = false;
+
+            //마우스 우클릭 메뉴
+            contextMenu = new ContextMenu();
+
+            showMainFormItem = new MenuItem("메모 목록 보기");
+            showMainFormItem.Click += ShowMainFormItem_Click;
+
+            contextMenu.MenuItems.Add(showMainFormItem);
 
             //메모창 상단바(드래그해서 창 이동) 구현
             mover = new Panel
@@ -57,9 +70,10 @@ namespace HaemaNote
             mover.MouseDown += Mover_MouseDown;
             mover.MouseMove += Mover_MouseMove;
             mover.MouseUp += Mover_MouseUp;
+            mover.MouseClick += Mover_MouseClick;
             Controls.Add(mover);
 
-            //메모 영역 텍스트박스 //푸시하자
+            //메모 영역 텍스트박스
             textBox = new TextBox
             {
                 Location = new Point(0, titleHeight),
@@ -72,6 +86,7 @@ namespace HaemaNote
                 
             };
             textBox.TextChanged += TextBox_TextChanged;
+            textBox.ContextMenu = contextMenu;
             Controls.Add(textBox);
 
             //닫기 버튼
@@ -102,12 +117,41 @@ namespace HaemaNote
 
             mover.SendToBack();
 
-            note = new Note();
-
             isInit = true;
 
             Shown += StickyNoteForm_Shown;
             Load += StickyNoteForm_Load;
+            MouseClick += StickyNoteForm_MouseClick;
+        }
+        public StickyNoteForm(Note n) : this()
+        {
+            isInit = false;
+
+            note = n;
+            textBox.Text = note.NoteText;
+
+            isInit = true;
+        }
+
+        private void ShowMainFormItem_Click(object sender, EventArgs e)
+        {
+            showMainForm();
+        }
+
+        private void Mover_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenu.Show(this, e.Location);
+            }
+        }
+
+        private void StickyNoteForm_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                contextMenu.Show(this, e.Location);
+            }
         }
 
         private void StickyNoteForm_Load(object sender, EventArgs e)
@@ -121,22 +165,17 @@ namespace HaemaNote
 
         private void StickyNoteForm_Shown(object sender, EventArgs e)
         {
-            
+            note.isStickyNote = true;
         }
 
-        public StickyNoteForm(Note n) : this()
-        {
-            isInit = false;
 
-            note = n;
-            textBox.Text = note.NoteText;
-
-            isInit = true;
-        }
         private void Mover_MouseUp(object sender, MouseEventArgs e)
         {
-            isMouseDown = false;
-            Save();
+            if (e.Button == MouseButtons.Left)
+            {
+                isMouseDown = false;
+                Save();
+            }
         }
         private void Mover_MouseMove(object sender, MouseEventArgs e)
         {
@@ -149,8 +188,11 @@ namespace HaemaNote
         }
         private void Mover_MouseDown(object sender, MouseEventArgs e)
         {
-            mouseDownPoint = e.Location;
-            isMouseDown = true;
+            if(e.Button == MouseButtons.Left)
+            {
+                mouseDownPoint = e.Location;
+                isMouseDown = true;
+            }
         }
         private void CloseBtn_Click(object sender, EventArgs e)
         {
@@ -165,7 +207,9 @@ namespace HaemaNote
             {
                 Delete();
             }
+            note.isStickyNote = false;
             Close();
+            Dispose();
         }
         private void TextBox_TextChanged(object sender, EventArgs e)
         {

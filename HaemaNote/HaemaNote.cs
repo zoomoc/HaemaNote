@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Independentsoft.Webdav;
 
 namespace HaemaNote
 {
@@ -17,8 +19,12 @@ namespace HaemaNote
         enum NoteManageType : int { Text = 0, File = 1 };
         NoteManageType noteManageType = NoteManageType.Text;
 
-        List<Note> notes;
-        List<StickyNoteForm> stickyNoteForms;
+        private List<Note> notes;
+        private List<StickyNoteForm> stickyNoteForms;
+
+        MainForm mainForm;
+
+        
 
         public HaemaNote()
         {
@@ -26,9 +32,14 @@ namespace HaemaNote
 
             notes = new List<Note>();
             stickyNoteForms = new List<StickyNoteForm>();
-            LoadNotes();
+            
+            mainForm = new MainForm();
+            mainForm.connect += ConnectWebDav;
+            mainForm.showNote += ShowAllNote;
 
             Shown += HaemaNote_Shown;
+
+            LoadNotes();
         }
         private void HaemaNote_Shown(object sender, EventArgs e)
         {
@@ -68,17 +79,35 @@ namespace HaemaNote
                 {
                     BinaryFormatter serializer = new BinaryFormatter();
                     this.notes = (List<Note>)serializer.Deserialize(notesData);
-
-                    foreach(Note note in this.notes)
+                    notesData.Close();
+                    
+                    if (notes.Count != 0)
                     {
-                        AddNote(note);
+                        foreach (Note note in this.notes)
+                        {
+                            if (note.isStickyNote == true)
+                            {
+                                ShowNote(note);
+                            }
+                        }
+                        if (stickyNoteForms.Count() == 0)
+                        {
+                            mainForm.Show();
+                        }
+                    }
+                    else
+                    {
+                        AddNote();
+                        ShowNote(notes.Last());
                     }
                 }
                 else
                 {
+                    notesData.Close();
+
                     AddNote();
+                    ShowNote(notes.Last());
                 }
-                notesData.Close();
                 return;
             }
             
@@ -87,27 +116,51 @@ namespace HaemaNote
                 //나중에 구현
                 throw new Exception("파일 타입 관리는 아직 구현되어 있지 않습니다");
             }
+
+            //return하지 않을 경우 예외 발생
             throw new Exception("노트 불러오기에 실패했습니다");
         }
         private void AddNote()
         {
-            stickyNoteForms.Add(new StickyNoteForm());
-            stickyNoteForms.Last<StickyNoteForm>().sendSaveEvent += SaveNotes;
-            stickyNoteForms.Last<StickyNoteForm>().sendAddNoteEvent += AddNote;
-            stickyNoteForms.Last<StickyNoteForm>().sendDeleteEvent += DeleteNote;
-            stickyNoteForms.Last<StickyNoteForm>().FormClosed += StickyNoteClosed;
-            stickyNoteForms.Last<StickyNoteForm>().Show(this);
+            uint newNoteId = 0;
+            foreach (Note note in notes)
+            {
+                if(note.id >= newNoteId)
+                {
+                    newNoteId = note.id+1;
+                }
+            }
+
+            AddNote(newNoteId);
         }
-
-
+        private void AddNote(uint noteId)
+        {
+            Note n = new Note(noteId);
+            AddNote(n);
+        }
         private void AddNote(Note note)
         {
-            stickyNoteForms.Add(new StickyNoteForm(note));
-            stickyNoteForms.Last<StickyNoteForm>().sendSaveEvent += SaveNotes;
-            stickyNoteForms.Last<StickyNoteForm>().sendAddNoteEvent += AddNote;
-            stickyNoteForms.Last<StickyNoteForm>().sendDeleteEvent += DeleteNote;
-            stickyNoteForms.Last<StickyNoteForm>().FormClosed += StickyNoteClosed;
-            stickyNoteForms.Last<StickyNoteForm>().Show(this);
+            notes.Add(note);
+        }
+        private void ShowNote(Note note)
+        {
+            StickyNoteForm newStickyNoteForm = new StickyNoteForm(note);
+            stickyNoteForms.Add(newStickyNoteForm);
+
+            newStickyNoteForm.sendSaveEvent += SaveNotes;
+            newStickyNoteForm.sendAddNoteEvent += AddNote;
+            newStickyNoteForm.sendDeleteEvent += DeleteNote;
+            newStickyNoteForm.FormClosed += StickyNoteClosed;
+            newStickyNoteForm.showMainForm += showMainForm;
+            
+            newStickyNoteForm.Show(this);
+
+            MessageBox.Show("noteID: " + newStickyNoteForm.note.id);
+        }
+        private void AddStickyNote()
+        {
+            AddNote();
+            ShowNote(notes.Last());
         }
         private void DeleteNote(StickyNoteForm sender)
         {
@@ -116,8 +169,43 @@ namespace HaemaNote
         }
         private void StickyNoteClosed(object sender, FormClosedEventArgs e)
         {
-            MessageBox.Show(stickyNoteForms.Count().ToString());
-            MessageBox.Show(stickyNoteForms.Last<StickyNoteForm>().note.NoteText);
+            if(stickyNoteForms.Count == 0)
+            {
+                SaveNotes();
+                Close();
+            }
+        }
+        private void showMainForm()
+        {
+            if(mainForm.Visible == true)
+            {
+                mainForm.Focus();
+            }
+            if(mainForm.Visible == false)
+            {
+                mainForm.Show(this);
+            }
+        }
+        private void ConnectWebDav()
+        {
+            NetworkCredential credential = new NetworkCredential("tmddlf372", "suprem@73");
+            WebdavSession session = new WebdavSession(credential);
+            Resource resource = new Resource(session);
+
+            string[] list = resource.List("http://tmddlf37.iptime.org:5005/");
+
+            string msg = "";
+            foreach(string res in list) {
+                msg += res + "\n";
+            }
+            MessageBox.Show(msg);
+        }
+        private void ShowAllNote()
+        {
+            foreach (Note note in notes)
+            {
+                ShowNote(note);
+            }
         }
     }
 }
