@@ -59,7 +59,7 @@ namespace HaemaNote
             mover.MouseUp += Mover_MouseUp;
             Controls.Add(mover);
 
-            //메모 영역 텍스트박스
+            //메모 영역 텍스트박스 //푸시하자
             textBox = new TextBox
             {
                 Location = new Point(0, titleHeight),
