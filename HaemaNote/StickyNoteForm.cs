@@ -209,7 +209,6 @@ namespace HaemaNote
             }
             note.isStickyNote = false;
             Close();
-            Dispose();
         }
         private void TextBox_TextChanged(object sender, EventArgs e)
         {

@@ -36,13 +36,27 @@ namespace HaemaNote
             mainForm = new MainForm();
             mainForm.connect += ConnectWebDav;
             mainForm.showNote += ShowAllNote;
+            mainForm.VisibleChanged += MainForm_VisibleChanged;
 
             Shown += HaemaNote_Shown;
 
             LoadNotes();
         }
+
+        private void MainForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (mainForm.Visible == false)
+            {
+                if (stickyNoteForms.Count() == 0)
+                {
+                    Application.Exit();
+                }
+            }
+        }
+
         private void HaemaNote_Shown(object sender, EventArgs e)
         {
+            //메인창 숨기기
             Opacity = 0;
             Location = new Point(-2147483648, -2147483648);
             Size = new Size(0, 0);
@@ -54,11 +68,6 @@ namespace HaemaNote
             {
                 try
                 {
-                    notes = new List<Note>();
-                    foreach(StickyNoteForm stickyNoteForm in stickyNoteForms)
-                    {
-                        notes.Add(stickyNoteForm.note);
-                    }
                     BinaryFormatter serializer = new BinaryFormatter();
                     FileStream notesData = new FileStream("data.dat", FileMode.OpenOrCreate);
                     serializer.Serialize(notesData, notes);
@@ -120,7 +129,8 @@ namespace HaemaNote
             //return하지 않을 경우 예외 발생
             throw new Exception("노트 불러오기에 실패했습니다");
         }
-        private void AddNote()
+        
+        private Note AddNote()
         {
             uint newNoteId = 0;
             foreach (Note note in notes)
@@ -131,48 +141,71 @@ namespace HaemaNote
                 }
             }
 
-            AddNote(newNoteId);
+            return AddNote(newNoteId);
         }
-        private void AddNote(uint noteId)
+        private Note AddNote(uint noteID)
         {
-            Note n = new Note(noteId);
-            AddNote(n);
+            Note n = new Note(noteID);
+            return AddNote(n);
         }
-        private void AddNote(Note note)
+        private Note AddNote(Note note)
         {
             notes.Add(note);
+            return note;
         }
+        private void AddStickyNote()
+        {
+            ShowNote(AddNote());
+        }
+
+        private Note FindNote(uint noteID)
+        {
+            foreach(Note note in notes)
+            {
+                if(note.id == noteID)
+                {
+                    return note;
+                }
+            }
+            return null;
+        }
+
         private void ShowNote(Note note)
         {
+            foreach (StickyNoteForm stickyNoteForm in stickyNoteForms)
+            {
+                if (stickyNoteForm.note == note)
+                {
+                    stickyNoteForm.Visible = true;
+                    return;
+                }
+            }
+
             StickyNoteForm newStickyNoteForm = new StickyNoteForm(note);
             stickyNoteForms.Add(newStickyNoteForm);
 
             newStickyNoteForm.sendSaveEvent += SaveNotes;
-            newStickyNoteForm.sendAddNoteEvent += AddNote;
+            newStickyNoteForm.sendAddNoteEvent += AddStickyNote;
             newStickyNoteForm.sendDeleteEvent += DeleteNote;
             newStickyNoteForm.FormClosed += StickyNoteClosed;
             newStickyNoteForm.showMainForm += showMainForm;
             
             newStickyNoteForm.Show(this);
+        }
 
-            MessageBox.Show("noteID: " + newStickyNoteForm.note.id);
-        }
-        private void AddStickyNote()
-        {
-            AddNote();
-            ShowNote(notes.Last());
-        }
         private void DeleteNote(StickyNoteForm sender)
         {
+            notes.Remove(sender.note);
             stickyNoteForms.Remove(sender);
             SaveNotes();
         }
         private void StickyNoteClosed(object sender, FormClosedEventArgs e)
         {
-            if(stickyNoteForms.Count == 0)
+            stickyNoteForms.Remove((StickyNoteForm)sender);
+
+            if(stickyNoteForms.Count == 0 & mainForm.Visible == false)
             {
-                SaveNotes();
-                Close();
+                Application.Exit();
             }
         }
         private void showMainForm()
