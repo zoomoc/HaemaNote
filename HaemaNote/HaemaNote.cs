@@ -37,6 +37,7 @@ namespace HaemaNote
             mainForm.connect += ConnectWebDav;
             mainForm.showNote += ShowAllNote;
             mainForm.VisibleChanged += MainForm_VisibleChanged;
+            mainForm.RequestNotes += GetNotes;
 
             Shown += HaemaNote_Shown;
 
@@ -239,6 +240,10 @@ namespace HaemaNote
             {
                 ShowNote(note);
             }
+        }
+        public List<Note> GetNotes()
+        {
+            return notes;
         }
     }
 }

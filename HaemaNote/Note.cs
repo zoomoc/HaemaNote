@@ -7,7 +7,7 @@ using System.Text;
 namespace HaemaNote
 {
     [Serializable]
-    class Note
+    public class Note
     {
         public readonly uint id;
         public bool isStickyNote = false;
