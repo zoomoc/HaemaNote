@@ -4,13 +4,24 @@ using System.Windows.Forms;
 
 namespace HaemaNote
 {
-    class StickyNoteForm : Form
+    public class StickyNoteForm : Form
     {
-        int titleHeight = 30;
+        private int titleHeight = 40; //상단바 두께
+        private int borderThickness = 5; //가장자리 두께
 
         //상단바 구현에 필요한 멤버
         private Panel mover;
-        private bool isMouseDown = false;
+        private bool isMoverActive = false;
+
+        //창크기 리사이즈 구현에 필요한 멤버
+        private bool isWidthResizeActive = false;
+        private bool isHeightResizeActive = false;
+
+        private enum ResizingWidth : int { None = 0, Left = 1, Right = 2 }
+        private ResizingWidth isResizingWidth;
+        private enum ResizingHeight : int { None = 0, Top = 1, Bottom = 2 }
+        private ResizingHeight isResizingHeight;
+
         private Point mouseDownPoint;
 
         //컨트롤들
@@ -40,6 +51,7 @@ namespace HaemaNote
         //isInit 값이 false일때는 save, delete 등이 동작하지 않도록 함
         private bool isInit = false;
 
+        //borderstyle none일때 가장자리 드래그 사이즈조절하는 코드라고해서 받았는데.. 조금다르네
         /*
         [Flags]
         public enum WindowStyle
@@ -80,7 +92,7 @@ namespace HaemaNote
         public static extern Int32 GetWindowLong(IntPtr hWnd, Int32 Offset);
         [DllImport("user32.dll")]
         public static extern Int32 SetWindowLong(IntPtr hWnd, Int32 Offset, Int32 newLong);
-        */
+        
 
         const int WM_NCHITTEST = 0x0084;
         const int HTCLIENT = 1;
@@ -98,12 +110,12 @@ namespace HaemaNote
                     break;
             }
         }
-
+        */
 
         private StickyNoteForm()
         {
             //창 일반 설정
-            ClientSize = new System.Drawing.Size(224, 181);
+            ClientSize = new System.Drawing.Size(300, 200);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             BackColor = Color.FromArgb(253, 253, 201);
             ShowInTaskbar = false;
@@ -122,6 +134,7 @@ namespace HaemaNote
                 Location = new Point(0, 0),
                 Width = Size.Width,
                 Height = titleHeight,
+                Anchor = (AnchorStyles.Top|AnchorStyles.Left | AnchorStyles.Right),
                 BackColor = Color.FromArgb(248, 247, 182)
             };
             mover.MouseDown += Mover_MouseDown;
@@ -133,14 +146,14 @@ namespace HaemaNote
             //메모 영역 텍스트박스
             textBox = new TextBox
             {
-                Location = new Point(0, titleHeight),
-                Width = Size.Width,
-                Height = Size.Height,
+                Location = new Point(0 + borderThickness, titleHeight + borderThickness),
+                Width = Size.Width - (borderThickness * 2),
+                Height = Size.Height - titleHeight - (borderThickness * 2),
+                Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right),
                 BorderStyle = BorderStyle.None,
                 BackColor = Color.FromArgb(253, 253, 201),
                 Multiline = true,
-                Font = new Font(new FontFamily("맑은 고딕"), 12.0f),
-                
+                Font = new Font(new FontFamily("맑은 고딕"), 12.0f)
             };
             textBox.TextChanged += TextBox_TextChanged;
             textBox.ContextMenu = contextMenu;
@@ -151,6 +164,7 @@ namespace HaemaNote
             {
                 Location = new Point(Size.Width - titleHeight, 0),
                 Size = new Size(titleHeight, titleHeight),
+                Anchor = (AnchorStyles.Top | AnchorStyles.Right),
                 Text = "X",
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(248, 247, 182)
@@ -165,6 +179,7 @@ namespace HaemaNote
             {
                 Location = new Point(0, 0),
                 Size = new Size(titleHeight, titleHeight),
+                Anchor = (AnchorStyles.Top | AnchorStyles.Left),
                 Text = "+",
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(248, 247, 182)
@@ -174,7 +189,9 @@ namespace HaemaNote
             Controls.Add(addBtn);
 
             //리사이즈 
-            MouseHover += StickyNoteForm_MouseHover;
+            MouseMove += StickyNoteForm_MouseMove;
+            MouseDown += StickyNoteForm_MouseDown;
+            MouseUp += StickyNoteForm_MouseUp;
 
 
             mover.SendToBack();
@@ -186,14 +203,115 @@ namespace HaemaNote
             MouseClick += StickyNoteForm_MouseClick;
         }
 
+        private void StickyNoteForm_MouseUp(object sender, MouseEventArgs e)
+        {
+            isResizingWidth = ResizingWidth.None;
+            isResizingHeight = ResizingHeight.None;
+        }
+
+        private void StickyNoteForm_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.X < borderThickness)
+            {
+                isResizingWidth = ResizingWidth.Left;
+            }
+            else if(e.X > ClientSize.Width - borderThickness)
+            {
+                isResizingWidth = ResizingWidth.Right;
+            }
+            if (e.Y < borderThickness)
+            {
+                isResizingHeight = ResizingHeight.Top;
+            }
+            else if (e.Y > ClientSize.Height - borderThickness)
+            {
+                isResizingHeight = ResizingHeight.Bottom;
+            }
+            mouseDownPoint = e.Location;
+        }
+
+        private void StickyNoteForm_MouseMove(object sender, MouseEventArgs e)
+        {
+            
+            //왼쪽위
+            if (e.X < borderThickness &
+                e.Y < borderThickness)
+            {
+                Cursor.Current = Cursors.SizeNWSE;
+            }
+            //왼쪽
+            else if (e.X < borderThickness &
+                (e.Y > borderThickness & e.Y < (ClientSize.Height - borderThickness)))
+            {
+                Cursor.Current = Cursors.SizeWE;
+            }
+            //왼쪽아래
+            else if (e.X < borderThickness &
+                e.Y > (ClientSize.Height - borderThickness))
+            {
+                Cursor.Current = Cursors.SizeNESW;
+            }
+            //아래
+            else if ((e.X > borderThickness & e.X < (ClientSize.Width - borderThickness)) &
+                e.Y > (ClientSize.Height - borderThickness))
+            {
+                Cursor.Current = Cursors.SizeNS;
+            }
+            //오른쪽아래
+            else if (e.X > (ClientSize.Width - borderThickness) &
+                e.Y > (ClientSize.Height - borderThickness))
+            {
+                Cursor.Current = Cursors.SizeNWSE;
+            }
+            //오른쪽
+            else if (e.X > (ClientSize.Width - borderThickness) &
+                (e.Y > borderThickness & e.Y < (ClientSize.Height - borderThickness)))
+            {
+                Cursor.Current = Cursors.SizeWE;
+            }
+            //오른쪽 위
+            else if (e.X > (ClientSize.Width - borderThickness) &
+                e.Y < borderThickness)
+            {
+                Cursor.Current = Cursors.SizeNESW;
+            }
+            //위
+            else if ((e.X > borderThickness & e.X < (ClientSize.Width - borderThickness))
+                & e.Y < borderThickness)
+            {
+                Cursor.Current = Cursors.SizeNS;
+            }
+
+            int width = ClientSize.Width;
+            int height = ClientSize.Height;
+            int xPos = Location.X;
+            int yPos = Location.Y;
+            
+            if(isResizingWidth != ResizingWidth.None)
+            {
+                width += e.Location.X - mouseDownPoint.X;
+                if(isResizingWidth == ResizingWidth.Left)
+                {
+                    xPos += e.Location.X;
+                }
+            }
+            if (isResizingHeight != ResizingHeight.None)
+            {
+                height += e.Location.Y - mouseDownPoint.Y;
+                if (isResizingHeight == ResizingHeight.Top)
+                {
+                    yPos += e.Location.Y;
+                }
+            }
+            ClientSize = new Size(width, height);
+            mouseDownPoint = e.Location;
+            Location = new Point(xPos, yPos);
+        }
+
+
         private void CloseBtn_MouseHover(object sender, EventArgs e)
         {
             //MessageBox.Show("Mousehover! btn");
-        }
-
-        private void StickyNoteForm_MouseHover(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Mousehover!");
         }
 
         public StickyNoteForm(Note n) : this()
@@ -241,6 +359,7 @@ namespace HaemaNote
 
             if (note.StickyNotePos != null)
             {
+                
                 Location = note.StickyNotePos;
             }
             note.StickyNotePos = Location;
@@ -256,13 +375,18 @@ namespace HaemaNote
         {
             if (e.Button == MouseButtons.Left)
             {
-                isMouseDown = false;
+                isMoverActive = false;
                 Save();
             }
+            
         }
         private void Mover_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isMouseDown == false) {
+            if (isMoverActive == false) {
+                if (e.Y < borderThickness)
+                {
+                    StickyNoteForm_MouseMove(sender, e);
+                }
                 return;
             }
             int x = Location.X + (e.Location.X - mouseDownPoint.X);
@@ -271,10 +395,15 @@ namespace HaemaNote
         }
         private void Mover_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Y < borderThickness)
+            {
+                StickyNoteForm_MouseDown(sender, e);
+                return;
+            }
+            if (e.Button == MouseButtons.Left)
             {
                 mouseDownPoint = e.Location;
-                isMouseDown = true;
+                isMoverActive = true;
             }
         }
         private void CloseBtn_Click(object sender, EventArgs e)

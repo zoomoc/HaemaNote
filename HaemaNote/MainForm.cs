@@ -82,6 +82,7 @@ namespace HaemaNote
         public NoteItem(Note n)
         {
             note = n;
+            Size = new Size(80, 20);
 
             text = new Label();
             text.Text = note.NoteText;
