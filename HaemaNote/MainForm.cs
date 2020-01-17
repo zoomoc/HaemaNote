@@ -41,6 +41,7 @@ namespace HaemaNote
             notes = RequestNotes();
             
             noteItems = new List<NoteItem>();
+            noteItemContainer.Controls.Clear();
             foreach (Note note in notes)
             {
                 NoteItem newNoteItem = new NoteItem(note);

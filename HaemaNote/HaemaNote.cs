@@ -200,6 +200,7 @@ namespace HaemaNote
             notes.Remove(sender.note);
             stickyNoteForms.Remove(sender);
             SaveNotes();
+            mainForm.RefreshNotes();
         }
         private void StickyNoteClosed(object sender, FormClosedEventArgs e)
         {
