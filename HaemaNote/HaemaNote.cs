@@ -35,7 +35,7 @@ namespace HaemaNote
             
             mainForm = new MainForm();
             mainForm.connect += ConnectWebDav;
-            mainForm.showNote += ShowAllNote;
+            mainForm.showStickyNote += ShowNote;
             mainForm.VisibleChanged += MainForm_VisibleChanged;
             mainForm.RequestNotes += GetNotes;
 
@@ -152,6 +152,7 @@ namespace HaemaNote
         private Note AddNote(Note note)
         {
             notes.Add(note);
+            mainForm.RefreshNotes();
             return note;
         }
         private void AddStickyNote()

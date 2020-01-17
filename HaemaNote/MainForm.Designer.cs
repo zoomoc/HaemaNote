@@ -33,9 +33,9 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.listPanel = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.noteItemContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.button3 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.listPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,6 +73,7 @@
             this.listPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.listPanel.AutoScroll = true;
             this.listPanel.Controls.Add(this.label1);
             this.listPanel.Controls.Add(this.noteItemContainer);
             this.listPanel.Controls.Add(this.textBox1);
@@ -83,6 +84,15 @@
             this.listPanel.Name = "listPanel";
             this.listPanel.Size = new System.Drawing.Size(407, 395);
             this.listPanel.TabIndex = 5;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(38, 12);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "label1";
             // 
             // noteItemContainer
             // 
@@ -103,15 +113,6 @@
             this.button3.Text = "닫기";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.Button3_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 12);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "label1";
             // 
             // MainForm
             // 

@@ -14,15 +14,14 @@ namespace HaemaNote
         private bool isMoverActive = false;
 
         //창크기 리사이즈 구현에 필요한 멤버
-        private bool isWidthResizeActive = false;
-        private bool isHeightResizeActive = false;
-
         private enum ResizingWidth : int { None = 0, Left = 1, Right = 2 }
         private ResizingWidth isResizingWidth;
         private enum ResizingHeight : int { None = 0, Top = 1, Bottom = 2 }
         private ResizingHeight isResizingHeight;
 
         private Point mouseDownPoint;
+        private int mouseDownWidth;
+        private int mouseDownHeight;
 
         //컨트롤들
         private TextBox textBox;
@@ -227,85 +226,103 @@ namespace HaemaNote
             {
                 isResizingHeight = ResizingHeight.Bottom;
             }
-            mouseDownPoint = e.Location;
+            mouseDownPoint = PointToScreen(e.Location);
+            mouseDownWidth = Width;
+            mouseDownHeight = Height;
         }
+        
+        private const int cGrip = 16;      // Grip size
+        private const int cCaption = 32;   // Caption bar height;
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Rectangle rc = new Rectangle(this.ClientSize.Width - cGrip, this.ClientSize.Height - cGrip, cGrip, cGrip);
+            ControlPaint.DrawSizeGrip(e.Graphics, this.BackColor, rc);
+            rc = new Rectangle(0, 0, this.ClientSize.Width, cCaption);
+            e.Graphics.FillRectangle(Brushes.DarkBlue, rc);
+        }
         private void StickyNoteForm_MouseMove(object sender, MouseEventArgs e)
         {
-            
-            //왼쪽위
-            if (e.X < borderThickness &
-                e.Y < borderThickness)
+            //마우스커서 바꾸는 코드
             {
-                Cursor.Current = Cursors.SizeNWSE;
-            }
-            //왼쪽
-            else if (e.X < borderThickness &
-                (e.Y > borderThickness & e.Y < (ClientSize.Height - borderThickness)))
-            {
-                Cursor.Current = Cursors.SizeWE;
-            }
-            //왼쪽아래
-            else if (e.X < borderThickness &
-                e.Y > (ClientSize.Height - borderThickness))
-            {
-                Cursor.Current = Cursors.SizeNESW;
-            }
-            //아래
-            else if ((e.X > borderThickness & e.X < (ClientSize.Width - borderThickness)) &
-                e.Y > (ClientSize.Height - borderThickness))
-            {
-                Cursor.Current = Cursors.SizeNS;
-            }
-            //오른쪽아래
-            else if (e.X > (ClientSize.Width - borderThickness) &
-                e.Y > (ClientSize.Height - borderThickness))
-            {
-                Cursor.Current = Cursors.SizeNWSE;
-            }
-            //오른쪽
-            else if (e.X > (ClientSize.Width - borderThickness) &
-                (e.Y > borderThickness & e.Y < (ClientSize.Height - borderThickness)))
-            {
-                Cursor.Current = Cursors.SizeWE;
-            }
-            //오른쪽 위
-            else if (e.X > (ClientSize.Width - borderThickness) &
-                e.Y < borderThickness)
-            {
-                Cursor.Current = Cursors.SizeNESW;
-            }
-            //위
-            else if ((e.X > borderThickness & e.X < (ClientSize.Width - borderThickness))
-                & e.Y < borderThickness)
-            {
-                Cursor.Current = Cursors.SizeNS;
+                //왼쪽위
+                if (e.X < borderThickness &
+                    e.Y < borderThickness)
+                {
+                    Cursor.Current = Cursors.SizeNWSE;
+                }
+                //왼쪽
+                else if (e.X < borderThickness &
+                    (e.Y > borderThickness & e.Y < (ClientSize.Height - borderThickness)))
+                {
+                    Cursor.Current = Cursors.SizeWE;
+                }
+                //왼쪽아래
+                else if (e.X < borderThickness &
+                    e.Y > (ClientSize.Height - borderThickness))
+                {
+                    Cursor.Current = Cursors.SizeNESW;
+                }
+                //아래
+                else if ((e.X > borderThickness & e.X < (ClientSize.Width - borderThickness)) &
+                    e.Y > (ClientSize.Height - borderThickness))
+                {
+                    Cursor.Current = Cursors.SizeNS;
+                }
+                //오른쪽아래
+                else if (e.X > (ClientSize.Width - borderThickness) &
+                    e.Y > (ClientSize.Height - borderThickness))
+                {
+                    Cursor.Current = Cursors.SizeNWSE;
+                }
+                //오른쪽
+                else if (e.X > (ClientSize.Width - borderThickness) &
+                    (e.Y > borderThickness & e.Y < (ClientSize.Height - borderThickness)))
+                {
+                    Cursor.Current = Cursors.SizeWE;
+                }
+                //오른쪽 위
+                else if (e.X > (ClientSize.Width - borderThickness) &
+                    e.Y < borderThickness)
+                {
+                    Cursor.Current = Cursors.SizeNESW;
+                }
+                //위
+                else if ((e.X > borderThickness & e.X < (ClientSize.Width - borderThickness))
+                    & e.Y < borderThickness)
+                {
+                    Cursor.Current = Cursors.SizeNS;
+                }
             }
 
-            int width = ClientSize.Width;
-            int height = ClientSize.Height;
-            int xPos = Location.X;
-            int yPos = Location.Y;
-            
-            if(isResizingWidth != ResizingWidth.None)
+            SetStyle(ControlStyles.ResizeRedraw, false);
+
+            if(isResizingWidth == ResizingWidth.Left)
             {
-                width += e.Location.X - mouseDownPoint.X;
-                if(isResizingWidth == ResizingWidth.Left)
-                {
-                    xPos += e.Location.X;
-                }
+                Left = PointToScreen(e.Location).X;
+                Width = mouseDownWidth + mouseDownPoint.X - PointToScreen(e.Location).X;
+                
+                
             }
-            if (isResizingHeight != ResizingHeight.None)
+            else if(isResizingWidth == ResizingWidth.Right)
+            {
+                Width = mouseDownWidth + PointToScreen(e.Location).X - mouseDownPoint.X;
+            }
+            
+            /*
+            if(isResizingHeight == ResizingHeight.Top)
+            {
+                height += mouseDownPoint.Y - e.Location.Y;
+                yPos += e.Location.Y;
+            }
+            else if(isResizingHeight == ResizingHeight.Bottom)
             {
                 height += e.Location.Y - mouseDownPoint.Y;
-                if (isResizingHeight == ResizingHeight.Top)
-                {
-                    yPos += e.Location.Y;
-                }
             }
-            ClientSize = new Size(width, height);
-            mouseDownPoint = e.Location;
-            Location = new Point(xPos, yPos);
+            
+            //ClientSize = new Size(width, height);
+            */
+            SetStyle(ControlStyles.ResizeRedraw, true);
         }
 
 
@@ -378,7 +395,6 @@ namespace HaemaNote
                 isMoverActive = false;
                 Save();
             }
-            
         }
         private void Mover_MouseMove(object sender, MouseEventArgs e)
         {
