@@ -22,11 +22,22 @@ namespace HaemaNote
 
         private List<Note> notes;
         private List<NoteItem> noteItems;
-        public MainForm()
+
+        private Config config;
+        private ConfigPanel configPanel;
+
+        public MainForm(Config cfg)
         {
             InitializeComponent();
 
+            config = cfg;
+
             notes = new List<Note>();
+            configPanel = new ConfigPanel(config);
+            configPanel.Location = new Point(0, 60);
+
+            Controls.Add(configPanel);
+            configPanel.SendToBack();
 
             Shown += MainForm_Shown;
         }

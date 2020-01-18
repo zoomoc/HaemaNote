@@ -10,14 +10,18 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Independentsoft.Webdav;
+using System.Runtime.InteropServices;
 
 namespace HaemaNote
 {
     public partial class HaemaNote : Form
     {
-        //각종 설정값
+        //각종 설정값 -> Config 클래스로 대체해야 함... 언제하지 ㅠ
         enum NoteManageType : int { Text = 0, File = 1 };
         NoteManageType noteManageType = NoteManageType.Text;
+
+        Config config;
+
 
         private List<Note> notes;
         private List<StickyNoteForm> stickyNoteForms;
@@ -32,8 +36,10 @@ namespace HaemaNote
 
             notes = new List<Note>();
             stickyNoteForms = new List<StickyNoteForm>();
-            
-            mainForm = new MainForm();
+
+            config = new Config();
+
+            mainForm = new MainForm(config);
             mainForm.connect += ConnectWebDav;
             mainForm.showStickyNote += ShowNote;
             mainForm.VisibleChanged += MainForm_VisibleChanged;
@@ -41,6 +47,8 @@ namespace HaemaNote
 
             Shown += HaemaNote_Shown;
 
+            
+            
             LoadNotes();
         }
 
@@ -65,7 +73,7 @@ namespace HaemaNote
 
         private void SaveNotes()
         {
-            if(noteManageType == NoteManageType.Text)
+            if(config.noteManageType == Config.NoteManageType.Text)
             {
                 try
                 {
@@ -79,10 +87,14 @@ namespace HaemaNote
                     MessageBox.Show("노트 저장에 실패했습니다!\n에러 메시지: " + e.Message);
                 }
             }
+            if(config.noteManageType == Config.NoteManageType.File)
+            {
+                throw new Exception("파일타입은 아직 구현안됨 오류");
+            }
         }
         private void LoadNotes()
         {
-            if (noteManageType == NoteManageType.Text)
+            if (config.noteManageType == Config.NoteManageType.Text)
             {
                 FileStream notesData = new FileStream("data.dat", FileMode.OpenOrCreate);
                 if (notesData.Length != 0)
@@ -121,7 +133,7 @@ namespace HaemaNote
                 return;
             }
             
-            if (noteManageType == NoteManageType.File)
+            if (config.noteManageType == Config.NoteManageType.File)
             {
                 //나중에 구현
                 throw new Exception("파일 타입 관리는 아직 구현되어 있지 않습니다");

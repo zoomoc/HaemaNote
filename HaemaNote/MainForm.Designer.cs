@@ -45,13 +45,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(12, 43);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(301, 21);
+            this.textBox1.Size = new System.Drawing.Size(325, 21);
             this.textBox1.TabIndex = 2;
             // 
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(319, 41);
+            this.button1.Location = new System.Drawing.Point(343, 41);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 3;
@@ -60,7 +60,8 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(319, 12);
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(343, 12);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 4;
@@ -82,7 +83,7 @@
             this.listPanel.Location = new System.Drawing.Point(0, 0);
             this.listPanel.Margin = new System.Windows.Forms.Padding(0);
             this.listPanel.Name = "listPanel";
-            this.listPanel.Size = new System.Drawing.Size(407, 395);
+            this.listPanel.Size = new System.Drawing.Size(419, 412);
             this.listPanel.TabIndex = 5;
             // 
             // label1
@@ -99,9 +100,11 @@
             this.noteItemContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.noteItemContainer.AutoScroll = true;
+            this.noteItemContainer.AutoSize = true;
             this.noteItemContainer.Location = new System.Drawing.Point(12, 70);
             this.noteItemContainer.Name = "noteItemContainer";
-            this.noteItemContainer.Size = new System.Drawing.Size(382, 312);
+            this.noteItemContainer.Size = new System.Drawing.Size(406, 346);
             this.noteItemContainer.TabIndex = 5;
             // 
             // button3
@@ -119,6 +122,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(406, 394);
             this.Controls.Add(this.listPanel);
             this.Controls.Add(this.button3);
