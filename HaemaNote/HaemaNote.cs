@@ -11,35 +11,36 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Independentsoft.Webdav;
 using System.Runtime.InteropServices;
+using HaemaNote.Properties;
 
 namespace HaemaNote
 {
     public partial class HaemaNote : Form
     {
-        //각종 설정값 -> Config 클래스로 대체해야 함... 언제하지 ㅠ
-        enum NoteManageType : int { Text = 0, File = 1 };
-        NoteManageType noteManageType = NoteManageType.Text;
-
-        Config config;
-
-
         private List<Note> notes;
         private List<StickyNoteForm> stickyNoteForms;
 
         MainForm mainForm;
 
-        
+        Properties.Settings settings;
 
         public HaemaNote()
         {
-            InitializeComponent();
+            settings = Properties.Settings.Default;
+            settings.Reset(); //설정 초기화하기
+
+            ClientSize = new Size(120, 0);
+            Icon = Properties.Resources.HaemaNote;
+            StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            Location = new Point(-2147483648, -2147483648);
+            Name = "HaemaNote";
+            Text = "HaemaNote";
 
             notes = new List<Note>();
             stickyNoteForms = new List<StickyNoteForm>();
 
-            config = new Config();
+            mainForm = new MainForm();
 
-            mainForm = new MainForm(config);
             mainForm.connect += ConnectWebDav;
             mainForm.showStickyNote += ShowNote;
             mainForm.VisibleChanged += MainForm_VisibleChanged;
@@ -47,8 +48,6 @@ namespace HaemaNote
 
             Shown += HaemaNote_Shown;
 
-            
-            
             LoadNotes();
         }
 
@@ -73,28 +72,45 @@ namespace HaemaNote
 
         private void SaveNotes()
         {
-            if(config.noteManageType == Config.NoteManageType.Text)
+            switch(settings.noteManageType)
             {
-                try
-                {
-                    BinaryFormatter serializer = new BinaryFormatter();
-                    FileStream notesData = new FileStream("data.dat", FileMode.OpenOrCreate);
-                    serializer.Serialize(notesData, notes);
-                    notesData.Close();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show("노트 저장에 실패했습니다!\n에러 메시지: " + e.Message);
-                }
+                case "Text":
+                    SaveByText();
+                    break;
+                case "File":
+                    SaveByFile();
+                    break;
+                case "WebDAV":
+                    SaveByWebDAV();
+                    break;
             }
-            if(config.noteManageType == Config.NoteManageType.File)
+        }
+        private void SaveByText()
+        {
+            try
             {
-                throw new Exception("파일타입은 아직 구현안됨 오류");
+                BinaryFormatter serializer = new BinaryFormatter();
+                FileStream notesData = new FileStream("data.dat", FileMode.OpenOrCreate);
+                serializer.Serialize(notesData, notes);
+                notesData.Close();
             }
+            catch (Exception e)
+            {
+                MessageBox.Show("노트 저장에 실패했습니다!\n에러 메시지: " + e.Message);
+            }
+        }
+        private void SaveByFile()
+        {
+
+        }
+        
+        private void SaveByWebDAV()
+        {
+
         }
         private void LoadNotes()
         {
-            if (config.noteManageType == Config.NoteManageType.Text)
+            if (Properties.Settings.Default.noteManageType == "Text")
             {
                 FileStream notesData = new FileStream("data.dat", FileMode.OpenOrCreate);
                 if (notesData.Length != 0)
@@ -133,10 +149,11 @@ namespace HaemaNote
                 return;
             }
             
-            if (config.noteManageType == Config.NoteManageType.File)
+            if (Properties.Settings.Default.noteManageType == "File")
             {
                 //나중에 구현
                 throw new Exception("파일 타입 관리는 아직 구현되어 있지 않습니다");
+                return;
             }
 
             //return하지 않을 경우 예외 발생
@@ -171,7 +188,6 @@ namespace HaemaNote
         {
             ShowNote(AddNote());
         }
-
         private Note FindNote(uint noteID)
         {
             foreach(Note note in notes)
@@ -183,7 +199,6 @@ namespace HaemaNote
             }
             return null;
         }
-
         private void ShowNote(Note note)
         {
             foreach (StickyNoteForm stickyNoteForm in stickyNoteForms)

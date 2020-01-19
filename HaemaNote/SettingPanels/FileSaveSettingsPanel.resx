@@ -117,33 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAIAEBAAAAEAIABoBAAAJgAAAAAAAAABACAA2QAAAI4EAAAoAAAAEAAAACAAAAABACAAAAAAAAAE
-        AADDDgAAww4AAAAAAAAAAAAAyf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/wAAAP8AAAD/AAAA/8n9
-        /f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f8AAAD/yf39/wAA
-        AP8AAAD/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/AAAA/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/AAAA/wAAAP/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/AAAA/wAAAP/J/f3/AAAA/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/AAAA/wAAAP8AAAD/AAAA/wAAAP/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/yf39/wAAAP8AAAD/AAAA/wAAAP8AAAD/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/yf39/8n9/f8AAAD/AAAA/wAAAP/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/yf39/8n9/f/J/f3/AAAA/wAAAP8AAAD/yf39/8n9/f/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/yf39/8n9/f/J/f3/yf39/8n9/f8AAAD/AAAA/wAAAP/J/f3/yf39/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/yf39/8n9/f/J/f3/AAAA/wAAAP/J/f3/yf39/wAAAP8AAAD/AAAA/8n9/f/J/f3/yf39/8n9
-        /f/J/f3/q9/f/6vf3/+r39//q9/f/6vf3/8AAAD/AAAA/wAAAP8AAAD/q9/f/6vf3/+r39//q9/f/6vf
-        3/+r39//q9/f/6vf3/+r39//q9/f/6vf3/+r39//q9/f/wAAAP8AAAD/q9/f/wAAAP+r39//q9/f/6vf
-        3/+r39//q9/f/6vf3/+r39//q9/f/6vf3/+r39//q9/f/6vf3/8AAAD/q9/f/wAAAP+r39//q9/f/6vf
-        3/+r39//q9/f/6vf3/+r39//q9/f/6vf3/+r39//q9/f/6vf3/+r39//q9/f/6vf3/+r39//q9/f/6vf
-        3/+r39//q9/f/6vf3/+r39//q9/f/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACJUE5HDQoaCgAAAA1JSERSAAABAAAAAQACAwAAACEcQPUA
-        AAAJUExURd/fqwAAAP39ySz6gWsAAACLSURBVHja7dY7DoAgEEBBL8klPaU2JJuNCtFKdl7DJ9mhZdsk
-        aVA7iysAAKgNfEIAAMASQEu9fh0AAPwK2FN9KJ/jXQwAAKwLXGF3wwAAoAYwMwwAAAAAAKAu8AQBAAAA
-        AACoA0Sk7wEAQF0gIwAAoDbQEQAAUBeIHwsAAAAYDQMAgBrAbAAAYBngACY4o/QbNwpmAAAAAElFTkSu
-        QmCC
-</value>
-  </data>
+  <metadata name="folderBrowserDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

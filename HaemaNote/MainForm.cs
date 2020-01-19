@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using HaemaNote.SettingPanels;
 
 namespace HaemaNote
 {
@@ -23,17 +24,16 @@ namespace HaemaNote
         private List<Note> notes;
         private List<NoteItem> noteItems;
 
-        private Config config;
-        private ConfigPanel configPanel;
+        private NoteManageTypePanel configPanel;
 
-        public MainForm(Config cfg)
+        public MainForm()
         {
             InitializeComponent();
 
-            config = cfg;
+            
 
             notes = new List<Note>();
-            configPanel = new ConfigPanel(config);
+            configPanel = new NoteManageTypePanel();
             configPanel.Location = new Point(0, 60);
 
             Controls.Add(configPanel);
