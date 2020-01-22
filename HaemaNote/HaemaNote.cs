@@ -101,7 +101,14 @@ namespace HaemaNote
         }
         private void SaveByFile()
         {
-
+            string savePath = "";
+            foreach (Note note in notes)
+            {
+                savePath = settings.LocalSaveAddress + "\\";
+                savePath += note.lastModifiedTime.ToString("yyyy.MM.dd");
+                savePath += " " + note.id.ToString() + ".txt";
+                File.WriteAllText(savePath.ToString(), note.text, Encoding.UTF8);
+            }
         }
         
         private void SaveByWebDAV()

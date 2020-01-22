@@ -107,7 +107,7 @@ namespace HaemaNote
             BackColor = Color.FromArgb(253, 253, 201);
 
             text = new Label();
-            text.Text = note.NoteText;
+            text.Text = note.text;
             text.Location = new Point(0, 0);
             text.Size = this.Size;
             text.BackColor = Color.FromArgb(253, 253, 201);

@@ -29,6 +29,7 @@ namespace HaemaNote
         private PictureBox addButton;
         private ContextMenu contextMenu;
         private MenuItem item_ShowMainForm;
+        private Label lastModifiedTimeLabel;
 
         //노트추가, 저장, 삭제 이벤트 핸들러
         public delegate void AddNoteEventHandler();
@@ -187,6 +188,14 @@ namespace HaemaNote
             addButton.MouseUp += AddButton_MouseUp;
             addButton.MouseLeave += AddButton_MouseLeave;
             mover.Controls.Add(addButton);
+
+            lastModifiedTimeLabel = new Label
+            {
+                Size = new Size(ClientSize.Width, 10),
+                Dock = DockStyle.Bottom,
+                //Text = note.lastModifiedTime.ToString()
+            };
+            Controls.Add(lastModifiedTimeLabel);
 
             //메모 추가 버튼
             /*
@@ -389,7 +398,8 @@ namespace HaemaNote
             isInit = false;
 
             note = n;
-            textBox.Text = note.NoteText;
+            textBox.Text = note.text;
+            lastModifiedTimeLabel.Text = note.lastModifiedTime.ToString();
 
             isInit = true;
         }
@@ -470,7 +480,7 @@ namespace HaemaNote
         public void Save()
         {
             if (isInit == false) return;
-            note.NoteText = textBox.Text;
+            note.text = textBox.Text;
             note.StickyNotePos = Location;
             sendSaveEvent();
         }

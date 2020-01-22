@@ -10,17 +10,26 @@ namespace HaemaNote
     public class Note
     {
         public readonly uint id;
+
+        public string title = "";
+        public string text = "";
+
         public bool isStickyNote = false;
-        public string NoteText = "";
         public Point StickyNotePos;
+        public Size StickyNoteSize;
+        public DateTime lastModifiedTime;
         
         public Note(uint id)
         {
             this.id = id;
+            lastModifiedTime = DateTime.Now;
         }
         public Note(uint id, string noteText)
         {
-            this.NoteText = noteText;
+            this.id = id;
+            this.text = noteText;
+            lastModifiedTime = DateTime.Now;
         }
+
     }
 }
