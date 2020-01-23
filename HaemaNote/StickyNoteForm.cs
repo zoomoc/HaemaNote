@@ -7,7 +7,7 @@ namespace HaemaNote
     public class StickyNoteForm : ShadowForm
     {
         private int titleHeight = 30; //상단바 두께
-        private int borderThickness = 5; //가장자리 두께
+        private int borderThickness = 7; //가장자리 두께
 
         //상단바 구현에 필요한 멤버
         private Panel mover;
@@ -51,64 +51,6 @@ namespace HaemaNote
         //초기화하는 도중 텍스트박스 값을 변경하면 이벤트 처리 함수가 동작하는 문제 해결을 위해
         //isInit 값이 false일때는 save, delete 등이 동작하지 않도록 함
         private bool isInit = false;
-
-        #region 테두리 None일때 리사이즈 구현하는 코드
-        protected override void WndProc(ref Message m)
-        {
-            const int RESIZE_HANDLE_SIZE = 10;
-
-            switch (m.Msg)
-            {
-                case 0x0084/*NCHITTEST*/ :
-                    base.WndProc(ref m);
-
-                    if ((int)m.Result == 0x01/*HTCLIENT*/)
-                    {
-                        Point screenPoint = new Point(m.LParam.ToInt32());
-                        Point clientPoint = this.PointToClient(screenPoint);
-                        if (clientPoint.Y <= RESIZE_HANDLE_SIZE)
-                        {
-                            if (clientPoint.X <= RESIZE_HANDLE_SIZE)
-                                m.Result = (IntPtr)13/*HTTOPLEFT*/ ;
-                            else if (clientPoint.X < (Size.Width - RESIZE_HANDLE_SIZE))
-                                m.Result = (IntPtr)12/*HTTOP*/ ;
-                            else
-                                m.Result = (IntPtr)14/*HTTOPRIGHT*/ ;
-                        }
-                        else if (clientPoint.Y <= (Size.Height - RESIZE_HANDLE_SIZE))
-                        {
-                            if (clientPoint.X <= RESIZE_HANDLE_SIZE)
-                                m.Result = (IntPtr)10/*HTLEFT*/ ;
-                            else if (clientPoint.X < (Size.Width - RESIZE_HANDLE_SIZE))
-                                m.Result = (IntPtr)2/*HTCAPTION*/ ;
-                            else
-                                m.Result = (IntPtr)11/*HTRIGHT*/ ;
-                        }
-                        else
-                        {
-                            if (clientPoint.X <= RESIZE_HANDLE_SIZE)
-                                m.Result = (IntPtr)16/*HTBOTTOMLEFT*/ ;
-                            else if (clientPoint.X < (Size.Width - RESIZE_HANDLE_SIZE))
-                                m.Result = (IntPtr)15/*HTBOTTOM*/ ;
-                            else
-                                m.Result = (IntPtr)17/*HTBOTTOMRIGHT*/ ;
-                        }
-                    }
-                    return;
-            }
-            base.WndProc(ref m);
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.Style |= 0x20000; // <--- use 0x20000
-                return cp;
-            }
-        }
-        #endregion
 
         private StickyNoteForm()
         {
@@ -193,25 +135,8 @@ namespace HaemaNote
             {
                 Size = new Size(ClientSize.Width, 10),
                 Dock = DockStyle.Bottom,
-                //Text = note.lastModifiedTime.ToString()
             };
-            Controls.Add(lastModifiedTimeLabel);
-
-            //메모 추가 버튼
-            /*
-            addBtn = new Button
-            {
-                Location = new Point(0, 0),
-                Size = new Size(titleHeight, titleHeight),
-                Anchor = (AnchorStyles.Top | AnchorStyles.Left),
-                Text = "+",
-                FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(248, 247, 182)
-            };
-            addBtn.FlatAppearance.BorderSize = 0;
-            addBtn.Click += AddBtn_Click;
-            Controls.Add(addBtn);
-            */
+            //Controls.Add(lastModifiedTimeLabel);
 
             //리사이즈 
             MouseMove += StickyNoteForm_MouseMove;
@@ -227,8 +152,16 @@ namespace HaemaNote
             Load += StickyNoteForm_Load;
             MouseClick += StickyNoteForm_MouseClick;
         }
+        public StickyNoteForm(Note n) : this()
+        {
+            isInit = false;
 
+            note = n;
+            textBox.Text = note.text;
+            lastModifiedTimeLabel.Text = note.lastModifiedTime.ToString();
 
+            isInit = true;
+        }
 
         private void AddButton_MouseUp(object sender, MouseEventArgs e)
         {
@@ -290,7 +223,6 @@ namespace HaemaNote
             isResizingWidth = ResizingWidth.None;
             isResizingHeight = ResizingHeight.None;
         }
-
         private void StickyNoteForm_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.X < borderThickness)
@@ -366,7 +298,7 @@ namespace HaemaNote
             }
             #endregion
 
-            /*
+            #region 창크기 조절하는 코드
             SetStyle(ControlStyles.ResizeRedraw, false);
 
             if(isResizingWidth == ResizingWidth.Left)
@@ -382,27 +314,17 @@ namespace HaemaNote
             if(isResizingHeight == ResizingHeight.Top)
             {
                 Top = PointToScreen(e.Location).Y;
-                Height += mouseDownHeight+ mouseDownPoint.Y - PointToScreen(e.Location).Y;
+                Height = mouseDownHeight + mouseDownPoint.Y - PointToScreen(e.Location).Y;
             }
             else if(isResizingHeight == ResizingHeight.Bottom)
             {
-                Height += mouseDownHeight - PointToScreen(e.Location).Y + mouseDownPoint.Y;
+                Height = mouseDownHeight + PointToScreen(e.Location).Y - mouseDownPoint.Y;
             }
             
             SetStyle(ControlStyles.ResizeRedraw, true);
-            */
+            #endregion
         }
 
-        public StickyNoteForm(Note n) : this()
-        {
-            isInit = false;
-
-            note = n;
-            textBox.Text = note.text;
-            lastModifiedTimeLabel.Text = note.lastModifiedTime.ToString();
-
-            isInit = true;
-        }
 
         private void Item_ShowMainForm_Click(object sender, EventArgs e)
         {
@@ -443,6 +365,11 @@ namespace HaemaNote
 
         private void Mover_MouseUp(object sender, MouseEventArgs e)
         {
+            if (e.Y < borderThickness)
+            {
+                StickyNoteForm_MouseUp(sender, e);
+                return;
+            }
             if (e.Button == MouseButtons.Left)
             {
                 isMoverActive = false;
