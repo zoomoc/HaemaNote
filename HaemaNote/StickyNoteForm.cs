@@ -94,10 +94,13 @@ namespace HaemaNote
                 BorderStyle = BorderStyle.None,
                 BackColor = Color.FromArgb(253, 253, 201),
                 Multiline = true,
-                Font = new Font(new FontFamily("맑은 고딕"), 12.0f)
+                Font = new Font(new FontFamily("맑은 고딕"), 12.0f),
+                ScrollBars = ScrollBars.Vertical
+
             };
             textBox.TextChanged += TextBox_TextChanged;
             textBox.ContextMenu = contextMenu;
+            
             Controls.Add(textBox);
 
             //닫기 버튼
@@ -136,7 +139,10 @@ namespace HaemaNote
                 Size = new Size(ClientSize.Width, 10),
                 Dock = DockStyle.Bottom,
             };
-            //Controls.Add(lastModifiedTimeLabel);
+            lastModifiedTimeLabel.MouseUp += LastModifiedTimeLabel_MouseUp;
+            lastModifiedTimeLabel.MouseDown += LastModifiedTimeLabel_MouseDown;
+            lastModifiedTimeLabel.MouseMove += LastModifiedTimeLabel_MouseMove;
+            Controls.Add(lastModifiedTimeLabel);
 
             //리사이즈 
             MouseMove += StickyNoteForm_MouseMove;
@@ -146,19 +152,67 @@ namespace HaemaNote
 
             mover.SendToBack();
 
-            isInit = true;
-
             Shown += StickyNoteForm_Shown;
             Load += StickyNoteForm_Load;
             MouseClick += StickyNoteForm_MouseClick;
+
+            Activated += StickyNoteForm_Activated;
+            Deactivate += StickyNoteForm_Deactivate;
+
+            isInit = true;
         }
+
+        private void StickyNoteForm_Activated(object sender, EventArgs e)
+        {
+            if (isInit == false) return;
+
+            textBox.ScrollBars = ScrollBars.Vertical;
+            textBox.DeselectAll();
+            addButton.Show();
+            closeButton.Show();
+        }
+
+        
+        private void StickyNoteForm_Deactivate(object sender, EventArgs e)
+        {
+            if (isInit == false) return;
+
+            textBox.ScrollBars = ScrollBars.None;
+            textBox.DeselectAll();
+            addButton.Hide();
+            closeButton.Hide();
+        }
+
+
+        private void LastModifiedTimeLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Y > ClientSize.Height - borderThickness)
+            {
+                StickyNoteForm_MouseDown(sender, e);
+            }
+        }
+        private void LastModifiedTimeLabel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Y > ClientSize.Height - borderThickness)
+            {
+                StickyNoteForm_MouseMove(sender, e);
+            }
+        }
+        private void LastModifiedTimeLabel_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Y > ClientSize.Height - borderThickness)
+            {
+                StickyNoteForm_MouseUp(sender, e);
+            }
+        }
+
         public StickyNoteForm(Note n) : this()
         {
             isInit = false;
 
             note = n;
-            textBox.Text = note.text;
-            lastModifiedTimeLabel.Text = note.lastModifiedTime.ToString();
+            textBox.Text = note.Text;
+            lastModifiedTimeLabel.Text = note.LastModifiedDateTime.ToString();
 
             isInit = true;
         }
@@ -214,7 +268,7 @@ namespace HaemaNote
             {
                 Delete();
             }
-            note.isStickyNote = false;
+            note.IsStickyNote = false;
             Close();
         }
 
@@ -359,7 +413,7 @@ namespace HaemaNote
 
         private void StickyNoteForm_Shown(object sender, EventArgs e)
         {
-            note.isStickyNote = true;
+            note.IsStickyNote = true;
         }
 
 
@@ -400,6 +454,8 @@ namespace HaemaNote
                 isMoverActive = true;
             }
         }
+
+
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
             Save();
@@ -407,7 +463,7 @@ namespace HaemaNote
         public void Save()
         {
             if (isInit == false) return;
-            note.text = textBox.Text;
+            note.Text = textBox.Text;
             note.StickyNotePos = Location;
             sendSaveEvent();
         }

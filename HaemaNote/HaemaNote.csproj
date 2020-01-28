@@ -65,11 +65,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainForm.cs">
+    <Compile Include="NoteItemPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NoteItemPanel.Designer.cs">
+      <DependentUpon>NoteItemPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NoteListForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="NoteListForm.Designer.cs">
+      <DependentUpon>NoteListForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Note.cs" />
     <Compile Include="HaemaNote.cs">
@@ -94,14 +100,17 @@
     <Compile Include="SettingPanels\NoteManageTypePanel.Designer.cs">
       <DependentUpon>NoteManageTypePanel.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="NoteItemPanel.resx">
+      <DependentUpon>NoteItemPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SettingPanels\FileSaveSettingsPanel.resx">
       <DependentUpon>FileSaveSettingsPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingPanels\NoteManageTypePanel.resx">
       <DependentUpon>NoteManageTypePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="NoteListForm.resx">
+      <DependentUpon>NoteListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -10,7 +10,7 @@ using HaemaNote.SettingPanels;
 
 namespace HaemaNote
 {
-    public partial class MainForm : Form
+    public partial class NoteListForm : Form
     {
         public delegate void ConnectEventHandler();
         public event ConnectEventHandler connect;
@@ -26,25 +26,29 @@ namespace HaemaNote
 
         private NoteManageTypePanel configPanel;
 
-        public MainForm()
+        public NoteListForm()
         {
             InitializeComponent();
 
             
 
             notes = new List<Note>();
-            configPanel = new NoteManageTypePanel();
-            configPanel.Location = new Point(0, 60);
-
-            Controls.Add(configPanel);
-            configPanel.SendToBack();
+            
 
             Shown += MainForm_Shown;
+
+            
         }
 
+        
         private void MainForm_Shown(object sender, EventArgs e)
         {
             RefreshNotes();
+            foreach (Note note in notes)
+            {
+                NoteListPanel.Controls.Add(new NoteItemPanel(note, NoteItemPanel_showNote));
+            }
+            MessageBox.Show("초기화댐!\n NoteListPanel: " + NoteListPanel.Controls.Count);
         }
 
         public void RefreshNotes()
@@ -52,15 +56,20 @@ namespace HaemaNote
             notes = RequestNotes();
             
             noteItems = new List<NoteItem>();
-            noteItemContainer.Controls.Clear();
+            //noteItemContainer.Controls.Clear();
             foreach (Note note in notes)
             {
                 NoteItem newNoteItem = new NoteItem(note);
                 newNoteItem.showStickyNote += NewNoteItem_showStickyNote;
                 noteItems.Add(newNoteItem);
 
-                noteItemContainer.Controls.Add(newNoteItem);
+                //noteItemContainer.Controls.Add(newNoteItem);
             }
+        }
+
+        private void NoteItemPanel_showNote(Note n)
+        {
+            showStickyNote(n);
         }
 
         private void NewNoteItem_showStickyNote(Note n)
@@ -84,13 +93,13 @@ namespace HaemaNote
 
         private void button2_Click(object sender, EventArgs e)
         {
-            listPanel.Visible = false;
+            //listPanel.Visible = false;
         }
         private void Button3_Click(object sender, System.EventArgs e)
         {
-            listPanel.Visible = true;
+            //listPanel.Visible = true;
         }
-
+        
     }
 
     public class NoteItem : Panel
@@ -107,7 +116,7 @@ namespace HaemaNote
             BackColor = Color.FromArgb(253, 253, 201);
 
             text = new Label();
-            text.Text = note.text;
+            text.Text = note.Text;
             text.Location = new Point(0, 0);
             text.Size = this.Size;
             text.BackColor = Color.FromArgb(253, 253, 201);
