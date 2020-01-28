@@ -9,7 +9,8 @@ namespace HaemaNote
     //Note : 메모를 추상화한 클래스
     //메모할 때 입력되는 텍스트나 마지막으로 수정한 날짜를 관리하고,
     //올바른 값이 입력되었는지도 확인해야 하고,
-    //값이 변경될 경우 저장해달라고 요청할 책임을 진다.
+    //값이 변경될 경우 저장 및 새로고침 해달라고 요청할 책임을 진다.
+    //저장요청에 대한 책임은 Note에 있으니 다른 객체에서 저장요청을 하지 않는다.
 
     public class Note
     {
@@ -26,8 +27,11 @@ namespace HaemaNote
             }
             set
             {
-                _noteData = value;
-                OnChange();
+                if (_noteData != value)
+                {
+                    _noteData = value;
+                    OnChange();
+                }
             }
         }
         public string Text
@@ -38,8 +42,11 @@ namespace HaemaNote
             }
             set
             {
-                _noteData.text = value;
-                OnChange();
+                if (_noteData.text != value)
+                {
+                    _noteData.text = value;
+                    OnChange();
+                }
             }
         }
         public bool IsStickyNote
@@ -50,8 +57,11 @@ namespace HaemaNote
             }
             set
             {
-                _noteData.isStickyNote = value;
-                OnChange();
+                if (_noteData.isStickyNote != value)
+                {
+                    _noteData.isStickyNote = value;
+                    OnChange();
+                }
             }
         }
         public Point StickyNotePos
@@ -62,8 +72,11 @@ namespace HaemaNote
             }
             set
             {
-                _noteData.stickyNotePos = value;
-                OnChange();
+                if (_noteData.stickyNotePos != value)
+                {
+                    _noteData.stickyNotePos = value;
+                    OnChange(false);
+                }
             }
         }
         public Size StickyNoteSize
@@ -74,8 +87,11 @@ namespace HaemaNote
             }
             set
             {
-                _noteData.stickyNoteSize = value;
-                OnChange();
+                if (_noteData.stickyNoteSize != value)
+                {
+                    _noteData.stickyNoteSize = value;
+                    OnChange(false);
+                }
             }
         }
         public DateTime LastModifiedDateTime
@@ -86,14 +102,17 @@ namespace HaemaNote
             }
             private set
             {
-                _noteData.lastModifiedDateTime = value;
-                //OnChanged가 호출될때 항상 수정한 일시가 업데이트되니 여기서 또 호출하면 무한루프걸림
+                if (_noteData.lastModifiedDateTime != value)
+                {
+                    _noteData.lastModifiedDateTime = value;
+                    OnChange(false);
+                }
             }
         }
 
         public delegate void ChangeEventHandler();
-        public event ChangeEventHandler RequestSave;
-        
+        public event ChangeEventHandler DataChanged;
+
         private Note()
         {
             _isInit = false;
@@ -108,7 +127,7 @@ namespace HaemaNote
         {
             _isInit = false;
 
-            RequestSave += changeEventHandler;
+            DataChanged += changeEventHandler;
             this.id = id;
 
             _isInit = true;
@@ -117,23 +136,26 @@ namespace HaemaNote
         {
             _isInit = false;
 
-            RequestSave += changeEventHandler;
+            DataChanged += changeEventHandler;
             this.NoteData = noteData;
 
             _isInit = true;
         }
-        private void OnChange()
+        private void OnChange(bool isChangeModifiedTime = true)
         {
             if (_isInit == false)
             {
                 return;
             }
-
-            LastModifiedDateTime = DateTime.Now;
-            RequestSave();
+            if (isChangeModifiedTime == true)
+            {
+                LastModifiedDateTime = DateTime.Now;
+            }
+            DataChanged();
         }
+        
     }
-    
+
     [Serializable]
     public struct NoteData
     {
@@ -142,5 +164,36 @@ namespace HaemaNote
         public Point stickyNotePos;
         public Size stickyNoteSize;
         public DateTime lastModifiedDateTime;
+        public static bool operator ==(NoteData A, NoteData B)
+        {
+            if(A.text == B.text &&
+                A.isStickyNote == B.isStickyNote &&
+                A.stickyNotePos == B.stickyNotePos &&
+                A.stickyNoteSize == B.stickyNoteSize &&
+                A.lastModifiedDateTime == B.lastModifiedDateTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public static bool operator !=(NoteData A, NoteData B)
+        {
+            if (A.text == B.text &&
+                A.isStickyNote == B.isStickyNote &&
+                A.stickyNotePos == B.stickyNotePos &&
+                A.stickyNoteSize == B.stickyNoteSize &&
+                A.lastModifiedDateTime == B.lastModifiedDateTime)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
+    
 }

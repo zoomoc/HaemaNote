@@ -246,9 +246,7 @@ namespace HaemaNote
             StickyNoteForm newStickyNoteForm = new StickyNoteForm(note);
             stickyNoteFormList.Add(newStickyNoteForm);
 
-            newStickyNoteForm.sendSaveEvent += NoteList_Save;
             newStickyNoteForm.sendAddNoteEvent += AddStickyNote;
-            newStickyNoteForm.sendDeleteEvent += DeleteNote;
             newStickyNoteForm.FormClosed += StickyNoteClosed;
             newStickyNoteForm.showMainForm += showMainForm;
             

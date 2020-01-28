@@ -25,6 +25,7 @@ namespace HaemaNote
         public NoteItemPanel(Note note, ShowNoteEventHandler showNoteEventHandler) : this()
         {
             _note = note;
+            _note.DataChanged += _note_DataChanged;
             noteTextLabel.Text = _note.Text;
 
             foreach (Control control in this.Controls)
@@ -33,6 +34,11 @@ namespace HaemaNote
             }
 
             ShowNote += showNoteEventHandler;
+        }
+
+        private void _note_DataChanged()
+        {
+            noteTextLabel.Text = _note.Text;
         }
 
         private void NoteItemPanel_DoubleClick(object sender, EventArgs e)

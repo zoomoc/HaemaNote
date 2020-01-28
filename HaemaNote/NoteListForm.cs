@@ -10,6 +10,7 @@ using HaemaNote.SettingPanels;
 
 namespace HaemaNote
 {
+    //목록 폼
     public partial class NoteListForm : Form
     {
         public delegate void ConnectEventHandler();
@@ -48,7 +49,6 @@ namespace HaemaNote
             {
                 NoteListPanel.Controls.Add(new NoteItemPanel(note, NoteItemPanel_showNote));
             }
-            MessageBox.Show("초기화댐!\n NoteListPanel: " + NoteListPanel.Controls.Count);
         }
 
         public void RefreshNotes()

@@ -47,8 +47,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>Resources\HaemaNote.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Independentsoft.Webdav, Version=1.0.580.25649, Culture=neutral, PublicKeyToken=76be97fe952f1ec7, processorArchitecture=MSIL">

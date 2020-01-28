@@ -47,9 +47,7 @@
             this.noteTextLabel.Name = "noteTextLabel";
             this.noteTextLabel.Size = new System.Drawing.Size(286, 156);
             this.noteTextLabel.TabIndex = 1;
-            this.noteTextLabel.Text = "(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 " +
-    "내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)" +
-    "(메모 내용)(메모 내용)(메모 내용)(메모 내용)(메모 내용)";
+            this.noteTextLabel.Text = "(메모 내용)";
             // 
             // NoteItemPanel
             // 

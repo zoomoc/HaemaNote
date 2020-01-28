@@ -11,14 +11,14 @@ namespace HaemaNote
     }
     public class WIN32APIMethods
     {
+        #pragma warning disable CA1401 // P/Invokes should not be visible
         [DllImport("dwmapi.dll")]
         public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
-
         [DllImport("dwmapi.dll")]
         public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
-
         [DllImport("dwmapi.dll")]
         public static extern int DwmIsCompositionEnabled(ref int pfEnabled);
+        #pragma warning restore CA1401 // P/Invokes should not be visible
     }
     public struct MARGINS
     {
